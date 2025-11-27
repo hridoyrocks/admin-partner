@@ -11,30 +11,75 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
+import {
+    LayoutGrid,
+    Users,
+    Phone,
+    Trophy,
+    Image,
+    Settings,
+    HelpCircle,
+    Flag,
+    Ban,
+    MessageCircle
+} from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: dashboard(),
+        href: '/dashboard',
         icon: LayoutGrid,
+    },
+    {
+        title: 'Users',
+        href: '/users',
+        icon: Users,
+    },
+    {
+        title: 'Banned Users',
+        href: '/users/banned',
+        icon: Ban,
+    },
+    {
+        title: 'Call Logs',
+        href: '/calls',
+        icon: Phone,
+    },
+    {
+        title: 'Leaderboard',
+        href: '/leaderboard',
+        icon: Trophy,
+    },
+    {
+        title: 'Reports',
+        href: '/reports',
+        icon: Flag,
+    },
+    {
+        title: 'Call Topics',
+        href: '/topics',
+        icon: MessageCircle,
+    },
+    {
+        title: 'Banners',
+        href: '/banners',
+        icon: Image,
+    },
+    {
+        title: 'App Config',
+        href: '/config',
+        icon: Settings,
     },
 ];
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'Github Repo',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
+        title: 'Help & Support',
+        href: '#',
+        icon: HelpCircle,
     },
 ];
 </script>
@@ -45,7 +90,7 @@ const footerNavItems: NavItem[] = [
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="dashboard()">
+                        <Link href="/dashboard">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>
