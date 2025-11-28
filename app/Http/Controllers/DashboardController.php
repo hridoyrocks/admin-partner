@@ -24,19 +24,21 @@ class DashboardController extends Controller
         $monthStart = strtotime('first day of this month midnight');
 
         // User stats - single query with conditional counts
+        // Note: registered > 1704067200 filters out invalid timestamps (app launched Jan 2024)
+        $minValidTimestamp = 1704067200; // Jan 1, 2024
         $userStats = AppUser::selectRaw("
             COUNT(*) as total,
             SUM(CASE WHEN accountStatus = 'ACTIVE' THEN 1 ELSE 0 END) as active,
             SUM(CASE WHEN accountStatus = 'BANNED' THEN 1 ELSE 0 END) as banned,
             SUM(CASE WHEN status = 'ONLINE' THEN 1 ELSE 0 END) as online,
-            SUM(CASE WHEN registered >= ? THEN 1 ELSE 0 END) as today,
-            SUM(CASE WHEN registered >= ? AND registered < ? THEN 1 ELSE 0 END) as yesterday,
-            SUM(CASE WHEN registered >= ? THEN 1 ELSE 0 END) as this_week,
-            SUM(CASE WHEN registered >= ? AND registered < ? THEN 1 ELSE 0 END) as last_week,
-            SUM(CASE WHEN registered >= ? THEN 1 ELSE 0 END) as this_month,
+            SUM(CASE WHEN registered >= ? AND registered > ? THEN 1 ELSE 0 END) as today,
+            SUM(CASE WHEN registered >= ? AND registered < ? AND registered > ? THEN 1 ELSE 0 END) as yesterday,
+            SUM(CASE WHEN registered >= ? AND registered > ? THEN 1 ELSE 0 END) as this_week,
+            SUM(CASE WHEN registered >= ? AND registered < ? AND registered > ? THEN 1 ELSE 0 END) as last_week,
+            SUM(CASE WHEN registered >= ? AND registered > ? THEN 1 ELSE 0 END) as this_month,
             SUM(CASE WHEN gender = 'male' THEN 1 ELSE 0 END) as male,
             SUM(CASE WHEN gender = 'female' THEN 1 ELSE 0 END) as female
-        ", [$todayStart, $yesterdayStart, $todayStart, $weekStart, $lastWeekStart, $weekStart, $monthStart])
+        ", [$todayStart, $minValidTimestamp, $yesterdayStart, $todayStart, $minValidTimestamp, $weekStart, $minValidTimestamp, $lastWeekStart, $weekStart, $minValidTimestamp, $monthStart, $minValidTimestamp])
         ->first();
 
         // Call stats - single query with conditional counts
