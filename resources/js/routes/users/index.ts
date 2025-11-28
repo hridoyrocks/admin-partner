@@ -82,7 +82,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\UserController::banned
-* @see app/Http/Controllers/UserController.php:76
+* @see app/Http/Controllers/UserController.php:83
 * @route '/users/banned'
 */
 export const banned = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -97,7 +97,7 @@ banned.definition = {
 
 /**
 * @see \App\Http\Controllers\UserController::banned
-* @see app/Http/Controllers/UserController.php:76
+* @see app/Http/Controllers/UserController.php:83
 * @route '/users/banned'
 */
 banned.url = (options?: RouteQueryOptions) => {
@@ -106,7 +106,7 @@ banned.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\UserController::banned
-* @see app/Http/Controllers/UserController.php:76
+* @see app/Http/Controllers/UserController.php:83
 * @route '/users/banned'
 */
 banned.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -116,7 +116,7 @@ banned.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\UserController::banned
-* @see app/Http/Controllers/UserController.php:76
+* @see app/Http/Controllers/UserController.php:83
 * @route '/users/banned'
 */
 banned.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -126,7 +126,7 @@ banned.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\UserController::banned
-* @see app/Http/Controllers/UserController.php:76
+* @see app/Http/Controllers/UserController.php:83
 * @route '/users/banned'
 */
 const bannedForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -136,7 +136,7 @@ const bannedForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => 
 
 /**
 * @see \App\Http\Controllers\UserController::banned
-* @see app/Http/Controllers/UserController.php:76
+* @see app/Http/Controllers/UserController.php:83
 * @route '/users/banned'
 */
 bannedForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -146,7 +146,7 @@ bannedForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\UserController::banned
-* @see app/Http/Controllers/UserController.php:76
+* @see app/Http/Controllers/UserController.php:83
 * @route '/users/banned'
 */
 bannedForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -163,7 +163,7 @@ banned.form = bannedForm
 
 /**
 * @see \App\Http\Controllers\UserController::show
-* @see app/Http/Controllers/UserController.php:124
+* @see app/Http/Controllers/UserController.php:137
 * @route '/users/{uid}'
 */
 export const show = (args: { uid: string | number } | [uid: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -178,7 +178,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\UserController::show
-* @see app/Http/Controllers/UserController.php:124
+* @see app/Http/Controllers/UserController.php:137
 * @route '/users/{uid}'
 */
 show.url = (args: { uid: string | number } | [uid: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -205,7 +205,7 @@ show.url = (args: { uid: string | number } | [uid: string | number ] | string | 
 
 /**
 * @see \App\Http\Controllers\UserController::show
-* @see app/Http/Controllers/UserController.php:124
+* @see app/Http/Controllers/UserController.php:137
 * @route '/users/{uid}'
 */
 show.get = (args: { uid: string | number } | [uid: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -215,7 +215,7 @@ show.get = (args: { uid: string | number } | [uid: string | number ] | string | 
 
 /**
 * @see \App\Http\Controllers\UserController::show
-* @see app/Http/Controllers/UserController.php:124
+* @see app/Http/Controllers/UserController.php:137
 * @route '/users/{uid}'
 */
 show.head = (args: { uid: string | number } | [uid: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -225,7 +225,7 @@ show.head = (args: { uid: string | number } | [uid: string | number ] | string |
 
 /**
 * @see \App\Http\Controllers\UserController::show
-* @see app/Http/Controllers/UserController.php:124
+* @see app/Http/Controllers/UserController.php:137
 * @route '/users/{uid}'
 */
 const showForm = (args: { uid: string | number } | [uid: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -235,7 +235,7 @@ const showForm = (args: { uid: string | number } | [uid: string | number ] | str
 
 /**
 * @see \App\Http\Controllers\UserController::show
-* @see app/Http/Controllers/UserController.php:124
+* @see app/Http/Controllers/UserController.php:137
 * @route '/users/{uid}'
 */
 showForm.get = (args: { uid: string | number } | [uid: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -245,7 +245,7 @@ showForm.get = (args: { uid: string | number } | [uid: string | number ] | strin
 
 /**
 * @see \App\Http\Controllers\UserController::show
-* @see app/Http/Controllers/UserController.php:124
+* @see app/Http/Controllers/UserController.php:137
 * @route '/users/{uid}'
 */
 showForm.head = (args: { uid: string | number } | [uid: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -262,7 +262,7 @@ show.form = showForm
 
 /**
 * @see \App\Http\Controllers\UserController::updateStatus
-* @see app/Http/Controllers/UserController.php:154
+* @see app/Http/Controllers/UserController.php:167
 * @route '/users/{uid}/status'
 */
 export const updateStatus = (args: { uid: string | number } | [uid: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -277,7 +277,7 @@ updateStatus.definition = {
 
 /**
 * @see \App\Http\Controllers\UserController::updateStatus
-* @see app/Http/Controllers/UserController.php:154
+* @see app/Http/Controllers/UserController.php:167
 * @route '/users/{uid}/status'
 */
 updateStatus.url = (args: { uid: string | number } | [uid: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -304,7 +304,7 @@ updateStatus.url = (args: { uid: string | number } | [uid: string | number ] | s
 
 /**
 * @see \App\Http\Controllers\UserController::updateStatus
-* @see app/Http/Controllers/UserController.php:154
+* @see app/Http/Controllers/UserController.php:167
 * @route '/users/{uid}/status'
 */
 updateStatus.patch = (args: { uid: string | number } | [uid: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -314,7 +314,7 @@ updateStatus.patch = (args: { uid: string | number } | [uid: string | number ] |
 
 /**
 * @see \App\Http\Controllers\UserController::updateStatus
-* @see app/Http/Controllers/UserController.php:154
+* @see app/Http/Controllers/UserController.php:167
 * @route '/users/{uid}/status'
 */
 const updateStatusForm = (args: { uid: string | number } | [uid: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -329,7 +329,7 @@ const updateStatusForm = (args: { uid: string | number } | [uid: string | number
 
 /**
 * @see \App\Http\Controllers\UserController::updateStatus
-* @see app/Http/Controllers/UserController.php:154
+* @see app/Http/Controllers/UserController.php:167
 * @route '/users/{uid}/status'
 */
 updateStatusForm.patch = (args: { uid: string | number } | [uid: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

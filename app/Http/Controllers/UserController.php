@@ -34,10 +34,17 @@ class UserController extends Controller
             $query->where('accountStatus', $request->status);
         }
 
-        // Sort
+        // Sort - for registered field, order by id desc as secondary to show latest users first
         $sortField = $request->get('sort', 'registered');
         $sortDirection = $request->get('direction', 'desc');
-        $query->orderBy($sortField, $sortDirection);
+
+        if ($sortField === 'registered') {
+            // Order by registered desc, then by id desc (latest inserted first for same timestamps)
+            $query->orderBy('registered', $sortDirection)
+                  ->orderBy('id', 'desc');
+        } else {
+            $query->orderBy($sortField, $sortDirection);
+        }
 
         $users = $query->paginate(20)->withQueryString();
 
@@ -88,10 +95,16 @@ class UserController extends Controller
             });
         }
 
-        // Sort
+        // Sort - for registered field, order by id desc as secondary to show latest users first
         $sortField = $request->get('sort', 'registered');
         $sortDirection = $request->get('direction', 'desc');
-        $query->orderBy($sortField, $sortDirection);
+
+        if ($sortField === 'registered') {
+            $query->orderBy('registered', $sortDirection)
+                  ->orderBy('id', 'desc');
+        } else {
+            $query->orderBy($sortField, $sortDirection);
+        }
 
         $users = $query->paginate(20)->withQueryString();
 
