@@ -4,7 +4,32 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trophy, Users, Phone, Clock } from 'lucide-vue-next';
+import { Trophy, Users, Phone, Clock, RefreshCw } from 'lucide-vue-next';
+import { ref, onMounted, onUnmounted } from 'vue';
+
+// Auto-refresh every 30 seconds
+const refreshInterval = ref<number | null>(null);
+const isRefreshing = ref(false);
+
+const refreshData = () => {
+    isRefreshing.value = true;
+    router.reload({
+        only: ['ranks'],
+        onFinish: () => {
+            isRefreshing.value = false;
+        }
+    });
+};
+
+onMounted(() => {
+    refreshInterval.value = window.setInterval(refreshData, 30000); // 30 seconds
+});
+
+onUnmounted(() => {
+    if (refreshInterval.value) {
+        clearInterval(refreshInterval.value);
+    }
+});
 
 interface Rank {
     position: number;
@@ -87,6 +112,16 @@ const getRankEmoji = (position: number) => {
                                 @click="changePeriod('lifetime')"
                             >
                                 All Time
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                @click="refreshData"
+                                :disabled="isRefreshing"
+                                class="gap-2 ml-2"
+                            >
+                                <RefreshCw :class="['h-4 w-4', isRefreshing ? 'animate-spin' : '']" />
+                                Refresh
                             </Button>
                         </div>
                     </div>
