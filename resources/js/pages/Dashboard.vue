@@ -365,8 +365,6 @@ const getRankBadge = (rank: number) => {
                     </CardContent>
                 </Card>
 
-            <!-- Bottom Row -->
-            <div class="grid gap-4 lg:grid-cols-3">
                 <!-- Recent Calls -->
                 <Card>
                     <CardHeader class="flex flex-row items-center justify-between">

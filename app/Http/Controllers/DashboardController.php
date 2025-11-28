@@ -56,8 +56,11 @@ class DashboardController extends Controller
         ", [$todayStart, $todayStart, $yesterdayStart, $todayStart, $weekStart, $weekStart, $lastWeekStart, $weekStart, $monthStart, $monthStart])
         ->first();
 
+        // Normalize duration (handles mixed ms/seconds data)
+        $normalizedTotalDuration = $this->normalizeTotalDuration($callStats->total_duration ?? 0, $callStats->total);
+
         // Average call duration
-        $avgCallDuration = $callStats->total > 0 ? round($callStats->total_duration / $callStats->total) : 0;
+        $avgCallDuration = $callStats->total > 0 ? round($normalizedTotalDuration / $callStats->total) : 0;
 
         // Reports stats - single query
         $reportStats = Report::selectRaw("
@@ -160,16 +163,16 @@ class DashboardController extends Controller
                 'newUsersLastWeek' => (int) $userStats->last_week,
                 'newUsersThisMonth' => (int) $userStats->this_month,
                 'totalCalls' => (int) $callStats->total,
-                'totalDuration' => $this->formatDuration($callStats->total_duration ?? 0),
-                'totalDurationSeconds' => (int) ($callStats->total_duration ?? 0),
+                'totalDuration' => $this->formatDuration($normalizedTotalDuration),
+                'totalDurationSeconds' => (int) $normalizedTotalDuration,
                 'todayCalls' => (int) $callStats->today,
-                'todayDuration' => $this->formatDuration($callStats->today_duration ?? 0),
+                'todayDuration' => $this->formatDuration($this->normalizeTotalDuration($callStats->today_duration ?? 0, $callStats->today)),
                 'yesterdayCalls' => (int) $callStats->yesterday,
                 'weekCalls' => (int) $callStats->week,
-                'weekDuration' => $this->formatDuration($callStats->week_duration ?? 0),
+                'weekDuration' => $this->formatDuration($this->normalizeTotalDuration($callStats->week_duration ?? 0, $callStats->week)),
                 'lastWeekCalls' => (int) $callStats->last_week,
                 'monthCalls' => (int) $callStats->month,
-                'monthDuration' => $this->formatDuration($callStats->month_duration ?? 0),
+                'monthDuration' => $this->formatDuration($this->normalizeTotalDuration($callStats->month_duration ?? 0, $callStats->month)),
                 'avgCallDuration' => $this->formatDuration($avgCallDuration),
                 'totalReports' => (int) $reportStats->total,
                 'pendingReports' => (int) $reportStats->pending,
@@ -187,6 +190,26 @@ class DashboardController extends Controller
             'recentReports' => $recentReports,
             'callsByDay' => $callsByDay,
         ]);
+    }
+
+    /**
+     * Normalize duration - handles mixed milliseconds/seconds data
+     * Uses average per call to detect if data is in milliseconds
+     */
+    private function normalizeTotalDuration($totalDuration, $callCount)
+    {
+        if ($callCount == 0) return 0;
+
+        $avgPerCall = $totalDuration / $callCount;
+
+        // If average duration per call > 3600 seconds (1 hour), data is likely in milliseconds
+        // Normal calls are typically 1-30 minutes (60-1800 seconds)
+        // If avg shows > 1 hour per call, it's probably milliseconds
+        if ($avgPerCall > 3600) {
+            return (int) ($totalDuration / 1000);
+        }
+
+        return (int) $totalDuration;
     }
 
     private function formatDuration($seconds)

@@ -53,17 +53,18 @@ class CallController extends Controller
                 'receiverName' => $call->receiverName,
                 'receiverId' => $call->receiverId,
                 'receiverProfile' => $call->receiverProfile,
-                'duration' => $call->duration,
+                'duration' => $call->duration_in_seconds, // Normalized to seconds
                 'formattedDuration' => $call->formatted_duration,
                 'callTime' => $call->formatted_call_time,
                 'timestamp' => $call->callTime,
             ];
         });
 
-        // Get summary stats
+        // Get summary stats with normalized duration
         $totalCalls = Call::count();
         $totalDuration = Call::sum('duration');
-        $avgDuration = Call::avg('duration');
+        $normalizedDuration = $this->normalizeTotalDuration($totalDuration, $totalCalls);
+        $avgDuration = $totalCalls > 0 ? $normalizedDuration / $totalCalls : 0;
 
         return Inertia::render('Calls/Index', [
             'calls' => $calls,
@@ -75,10 +76,27 @@ class CallController extends Controller
             ],
             'stats' => [
                 'totalCalls' => $totalCalls,
-                'totalDuration' => $this->formatDuration($totalDuration),
-                'avgDuration' => $this->formatDuration($avgDuration ?? 0),
+                'totalDuration' => $this->formatDuration($normalizedDuration),
+                'avgDuration' => $this->formatDuration($avgDuration),
             ],
         ]);
+    }
+
+    /**
+     * Normalize duration - handles mixed milliseconds/seconds data
+     */
+    private function normalizeTotalDuration($totalDuration, $callCount)
+    {
+        if ($callCount == 0) return 0;
+
+        $avgPerCall = $totalDuration / $callCount;
+
+        // If average > 1 hour per call, data is likely in milliseconds
+        if ($avgPerCall > 3600) {
+            return (int) ($totalDuration / 1000);
+        }
+
+        return (int) $totalDuration;
     }
 
     private function formatDuration($seconds)
