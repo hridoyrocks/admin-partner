@@ -8,23 +8,17 @@ import {
     Users,
     Phone,
     Clock,
-    TrendingUp,
-    TrendingDown,
     UserPlus,
     UserCheck,
     UserX,
-    Wifi,
     Flag,
     MessageCircle,
     Image,
     ArrowUpRight,
     ArrowDownRight,
     Activity,
-    BarChart3,
     Timer,
     AlertTriangle,
-    CheckCircle2,
-    Eye,
     RefreshCw
 } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
@@ -135,19 +129,6 @@ const userGrowth = computed(() => {
     return Math.round(((props.stats.newUsersToday - props.stats.newUsersYesterday) / props.stats.newUsersYesterday) * 100);
 });
 
-const callGrowth = computed(() => {
-    if (props.stats.yesterdayCalls === 0) return props.stats.todayCalls > 0 ? 100 : 0;
-    return Math.round(((props.stats.todayCalls - props.stats.yesterdayCalls) / props.stats.yesterdayCalls) * 100);
-});
-
-const weeklyGrowth = computed(() => {
-    if (props.stats.lastWeekCalls === 0) return props.stats.weekCalls > 0 ? 100 : 0;
-    return Math.round(((props.stats.weekCalls - props.stats.lastWeekCalls) / props.stats.lastWeekCalls) * 100);
-});
-
-// Max value for chart scaling
-const maxCallsInDay = computed(() => Math.max(...props.callsByDay.map(d => d.calls), 1));
-
 // Rank badge colors
 const getRankBadge = (rank: number) => {
     switch(rank) {
@@ -220,27 +201,20 @@ const getRankBadge = (rank: number) => {
                     </CardContent>
                 </Card>
 
-                <!-- Today's Calls -->
+                <!-- Total Calls -->
                 <Card class="relative overflow-hidden">
                     <div class="absolute right-0 top-0 h-24 w-24 translate-x-8 -translate-y-4 transform rounded-full bg-green-500/10"></div>
                     <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle class="text-sm font-medium text-muted-foreground">Today's Calls</CardTitle>
+                        <CardTitle class="text-sm font-medium text-muted-foreground">Total Calls</CardTitle>
                         <div class="rounded-lg bg-green-100 p-2">
                             <Phone class="h-4 w-4 text-green-600" />
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div class="text-3xl font-bold">{{ stats.todayCalls.toLocaleString() }}</div>
+                        <div class="text-3xl font-bold">{{ stats.totalCalls.toLocaleString() }}</div>
                         <div class="mt-2 flex items-center gap-2 text-sm">
-                            <span :class="[
-                                'flex items-center',
-                                callGrowth >= 0 ? 'text-green-600' : 'text-red-600'
-                            ]">
-                                <ArrowUpRight v-if="callGrowth >= 0" class="h-3 w-3" />
-                                <ArrowDownRight v-else class="h-3 w-3" />
-                                {{ Math.abs(callGrowth) }}%
-                            </span>
-                            <span class="text-muted-foreground">vs yesterday ({{ stats.yesterdayCalls }})</span>
+                            <Activity class="h-3 w-3 text-muted-foreground" />
+                            <span class="text-muted-foreground">All time calls</span>
                         </div>
                     </CardContent>
                 </Card>
@@ -263,7 +237,7 @@ const getRankBadge = (rank: number) => {
                     </CardContent>
                 </Card>
 
-                <!-- New Users -->
+                <!-- New Users Today -->
                 <Card class="relative overflow-hidden">
                     <div class="absolute right-0 top-0 h-24 w-24 translate-x-8 -translate-y-4 transform rounded-full bg-orange-500/10"></div>
                     <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -290,42 +264,7 @@ const getRankBadge = (rank: number) => {
             </div>
 
             <!-- Secondary Stats Row -->
-            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <!-- Weekly Calls -->
-                <Card>
-                    <CardContent class="pt-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm text-muted-foreground">This Week</p>
-                                <p class="text-2xl font-bold">{{ stats.weekCalls.toLocaleString() }}</p>
-                                <p class="text-xs text-muted-foreground">{{ stats.weekDuration }} duration</p>
-                            </div>
-                            <div :class="[
-                                'flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium',
-                                weeklyGrowth >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                            ]">
-                                <TrendingUp v-if="weeklyGrowth >= 0" class="h-3 w-3" />
-                                <TrendingDown v-else class="h-3 w-3" />
-                                {{ Math.abs(weeklyGrowth) }}%
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <!-- Monthly Calls -->
-                <Card>
-                    <CardContent class="pt-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm text-muted-foreground">This Month</p>
-                                <p class="text-2xl font-bold">{{ stats.monthCalls.toLocaleString() }}</p>
-                                <p class="text-xs text-muted-foreground">{{ stats.monthDuration }} duration</p>
-                            </div>
-                            <BarChart3 class="h-8 w-8 text-muted-foreground/50" />
-                        </div>
-                    </CardContent>
-                </Card>
-
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <!-- Pending Reports -->
                 <Card :class="stats.pendingReports > 0 ? 'border-orange-200 bg-orange-50/50' : ''">
                     <CardContent class="pt-6">
@@ -348,62 +287,37 @@ const getRankBadge = (rank: number) => {
                     </CardContent>
                 </Card>
 
-                <!-- Total Calls -->
+                <!-- Total Reports -->
                 <Card>
                     <CardContent class="pt-6">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm text-muted-foreground">Total Calls</p>
-                                <p class="text-2xl font-bold">{{ stats.totalCalls.toLocaleString() }}</p>
-                                <p class="text-xs text-muted-foreground">All time</p>
+                                <p class="text-sm text-muted-foreground">Total Reports</p>
+                                <p class="text-2xl font-bold">{{ stats.totalReports }}</p>
+                                <p class="text-xs text-muted-foreground">{{ stats.resolvedReports }} resolved</p>
                             </div>
-                            <Activity class="h-8 w-8 text-muted-foreground/50" />
+                            <Flag class="h-8 w-8 text-muted-foreground/50" />
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <!-- New Users This Month -->
+                <Card>
+                    <CardContent class="pt-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-muted-foreground">This Month Signups</p>
+                                <p class="text-2xl font-bold">{{ stats.newUsersThisMonth }}</p>
+                                <p class="text-xs text-muted-foreground">New users</p>
+                            </div>
+                            <UserPlus class="h-8 w-8 text-muted-foreground/50" />
                         </div>
                     </CardContent>
                 </Card>
             </div>
 
-            <!-- Charts & Activity Row -->
+            <!-- Quick Stats & Lists Row -->
             <div class="grid gap-4 lg:grid-cols-3">
-                <!-- Weekly Call Chart -->
-                <Card class="lg:col-span-2">
-                    <CardHeader>
-                        <div class="flex items-center justify-between">
-                            <CardTitle>Call Activity (Last 7 Days)</CardTitle>
-                            <div class="flex items-center gap-4 text-sm">
-                                <div class="flex items-center gap-1">
-                                    <div class="h-3 w-3 rounded-full bg-primary"></div>
-                                    <span class="text-muted-foreground">Calls</span>
-                                </div>
-                            </div>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div class="flex h-[200px] items-end gap-2">
-                            <div
-                                v-for="day in callsByDay"
-                                :key="day.date"
-                                class="flex flex-1 flex-col items-center gap-2"
-                            >
-                                <div class="relative w-full flex-1">
-                                    <div
-                                        class="absolute bottom-0 w-full rounded-t-md bg-primary transition-all hover:bg-primary/80"
-                                        :style="{ height: `${(day.calls / maxCallsInDay) * 100}%`, minHeight: day.calls > 0 ? '8px' : '0' }"
-                                    >
-                                        <div class="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-medium opacity-0 transition-opacity group-hover:opacity-100">
-                                            {{ day.calls }}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="text-center">
-                                    <p class="text-xs font-medium">{{ day.day }}</p>
-                                    <p class="text-[10px] text-muted-foreground">{{ day.calls }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
                 <!-- Quick Stats -->
                 <Card>
                     <CardHeader>
@@ -448,22 +362,8 @@ const getRankBadge = (rank: number) => {
                             </div>
                             <span class="text-2xl font-bold">{{ stats.totalReports }}</span>
                         </Link>
-
-                        <div class="flex items-center justify-between rounded-lg border p-3">
-                            <div class="flex items-center gap-3">
-                                <div class="rounded-lg bg-green-100 p-2">
-                                    <UserPlus class="h-4 w-4 text-green-600" />
-                                </div>
-                                <div>
-                                    <p class="text-sm font-medium">This Month</p>
-                                    <p class="text-xs text-muted-foreground">New signups</p>
-                                </div>
-                            </div>
-                            <span class="text-2xl font-bold">{{ stats.newUsersThisMonth }}</span>
-                        </div>
                     </CardContent>
                 </Card>
-            </div>
 
             <!-- Bottom Row -->
             <div class="grid gap-4 lg:grid-cols-3">
