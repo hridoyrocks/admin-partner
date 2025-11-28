@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,9 +24,36 @@ import {
     Timer,
     AlertTriangle,
     CheckCircle2,
-    Eye
+    Eye,
+    RefreshCw
 } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+
+// Auto-refresh every 30 seconds
+const refreshInterval = ref<number | null>(null);
+const lastRefresh = ref(new Date());
+const isRefreshing = ref(false);
+
+const refreshData = () => {
+    isRefreshing.value = true;
+    router.reload({
+        only: ['stats', 'recentCalls', 'topPerformers', 'recentReports', 'callsByDay'],
+        onFinish: () => {
+            lastRefresh.value = new Date();
+            isRefreshing.value = false;
+        }
+    });
+};
+
+onMounted(() => {
+    refreshInterval.value = window.setInterval(refreshData, 30000); // 30 seconds
+});
+
+onUnmounted(() => {
+    if (refreshInterval.value) {
+        clearInterval(refreshInterval.value);
+    }
+});
 
 interface Props {
     stats: {
@@ -143,7 +170,17 @@ const getRankBadge = (rank: number) => {
                     <h1 class="text-2xl font-bold tracking-tight">Dashboard</h1>
                     <p class="text-muted-foreground">Welcome back! Here's what's happening with your app.</p>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-3">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        @click="refreshData"
+                        :disabled="isRefreshing"
+                        class="gap-2"
+                    >
+                        <RefreshCw :class="['h-4 w-4', isRefreshing ? 'animate-spin' : '']" />
+                        <span class="hidden sm:inline">Refresh</span>
+                    </Button>
                     <div class="flex items-center gap-2 rounded-full bg-green-100 px-3 py-1.5">
                         <span class="relative flex h-2 w-2">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
