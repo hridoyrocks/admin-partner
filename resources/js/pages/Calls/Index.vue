@@ -5,8 +5,32 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Phone, Clock, Users } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { Search, Phone, Clock, Users, RefreshCw } from 'lucide-vue-next';
+import { ref, onMounted, onUnmounted } from 'vue';
+
+// Auto-refresh every 15 seconds for calls page
+const refreshInterval = ref<number | null>(null);
+const isRefreshing = ref(false);
+
+const refreshData = () => {
+    isRefreshing.value = true;
+    router.reload({
+        only: ['calls', 'stats'],
+        onFinish: () => {
+            isRefreshing.value = false;
+        }
+    });
+};
+
+onMounted(() => {
+    refreshInterval.value = window.setInterval(refreshData, 15000); // 15 seconds
+});
+
+onUnmounted(() => {
+    if (refreshInterval.value) {
+        clearInterval(refreshInterval.value);
+    }
+});
 
 interface Call {
     callId: string;
@@ -111,8 +135,18 @@ const clearFilters = () => {
 
             <!-- Calls Table -->
             <Card>
-                <CardHeader>
+                <CardHeader class="flex flex-row items-center justify-between">
                     <CardTitle>Call Logs</CardTitle>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        @click="refreshData"
+                        :disabled="isRefreshing"
+                        class="gap-2"
+                    >
+                        <RefreshCw :class="['h-4 w-4', isRefreshing ? 'animate-spin' : '']" />
+                        Refresh
+                    </Button>
                 </CardHeader>
                 <CardContent>
                     <!-- Filters -->
