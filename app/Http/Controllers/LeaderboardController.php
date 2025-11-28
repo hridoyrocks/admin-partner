@@ -45,13 +45,16 @@ class LeaderboardController extends Controller
                 'lifetime' => $rank->totalLifetimeCalls,
             };
 
+            // Normalize duration - if avg per call > 1 hour, it's likely in milliseconds
+            $normalizedDuration = $this->normalizeDuration($duration, $calls);
+
             return [
                 'position' => $startRank + $index,
                 'userId' => $rank->userId,
                 'name' => $rank->name,
                 'profileUrl' => $rank->profileUrl,
-                'duration' => $duration,
-                'formattedDuration' => $this->formatDuration($duration),
+                'duration' => $normalizedDuration,
+                'formattedDuration' => $this->formatDuration($normalizedDuration),
                 'calls' => $calls,
             ];
         });
@@ -62,14 +65,38 @@ class LeaderboardController extends Controller
         ]);
     }
 
+    /**
+     * Normalize duration - handles mixed milliseconds/seconds data
+     */
+    private function normalizeDuration($duration, $calls)
+    {
+        if ($calls == 0 || $duration == 0) return 0;
+
+        $avgPerCall = $duration / $calls;
+
+        // If average duration per call > 3600 seconds (1 hour), data is likely in milliseconds
+        if ($avgPerCall > 3600) {
+            return (int) ($duration / 1000);
+        }
+
+        return (int) $duration;
+    }
+
     private function formatDuration($seconds)
     {
+        if ($seconds <= 0) {
+            return '0m';
+        }
+
         $hours = floor($seconds / 3600);
         $minutes = floor(($seconds % 3600) / 60);
+        $secs = $seconds % 60;
 
         if ($hours > 0) {
             return sprintf('%dh %dm', $hours, $minutes);
+        } elseif ($minutes > 0) {
+            return sprintf('%dm %ds', $minutes, $secs);
         }
-        return sprintf('%dm', $minutes);
+        return sprintf('%ds', $secs);
     }
 }
